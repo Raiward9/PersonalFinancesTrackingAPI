@@ -10,7 +10,7 @@ export class AuthModel {
     register = async (req, res) => {
         const { username, password } = req.body
         
-        let user = await this.Db.getOneRowUsers({ username })
+        let user = await this.Db.getOneRow({ username })
         
         if(user) 
             return res.status(409).send({ message: 'The username already exists' })
@@ -18,7 +18,7 @@ export class AuthModel {
         const hashedPassword = await bcrypt.hash(password, parseInt(process.env.SALT_ROUNDS))
         
         try {
-            user = await this.Db.createOneRowUsers({ username , password: hashedPassword })
+            user = await this.Db.createOneRow({ username , password: hashedPassword })
         } catch (error) {
             return res.status(500).send({ message: error.message})//'Error creating the user' })
         }
@@ -47,7 +47,7 @@ export class AuthModel {
         const { username, password } = req.body
         
         try {
-            const user = await this.Db.getOneRowUsers({ username })
+            const user = await this.Db.getOneRow({ username })
         
             if(!user) 
                 return res.status(401).send({ message: 'username does not exist' })
