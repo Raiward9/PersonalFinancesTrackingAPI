@@ -7,8 +7,7 @@ export class AuthModel {
         this.Db = Db
     }
     
-    register = async (req, res) => {
-        const { username, password } = req.body
+    register = async ({ username, password, res }) => {
         
         let user = await this.Db.getOneRow({ username })
         
@@ -23,29 +22,10 @@ export class AuthModel {
             return res.status(500).send({ message: error.message})//'Error creating the user' })
         }
 
-        const token = jwt.sign(
-            { id: user.insertedId, username },
-            process.env.JWT_SECRET_KEY,
-            {
-                expiresIn: "1h"
-            }
-        )
-
-        user = { id: user.insertedId, username }
-
-        res
-            .cookie('access-token', token, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV == 'production',
-                sameSite: 'strict',
-                maxAge: 1000 * 60 * 60
-            })
-            .send({ user, token })
+        return this.createResponseWithCookie({ id: user.insertedId, username, res })
     }
 
-    login = async (req, res) => {
-        const { username, password } = req.body
-        
+    login = async ({ username, password, res }) => {
         try {
             const user = await this.Db.getOneRow({ username })
         
@@ -56,25 +36,8 @@ export class AuthModel {
 
             if(!isValid) 
                 return res.status(401).send({ message: 'password is not correct' })
-            
-            const token = jwt.sign(
-                { id: user._id, username: user.username },
-                process.env.JWT_SECRET_KEY,
-                {
-                    expiresIn: "1h"
-                }
-            )
 
-            const public_user = { id: user._id, username: user.username }
-
-            res
-                .cookie('access-token', token, {
-                    httpOnly: true,
-                    secure: process.env.NODE_ENV == 'production',
-                    sameSite: 'strict',
-                    maxAge: 1000 * 60 * 60
-                })
-                .send({ user: public_user, token })
+            return this.createResponseWithCookie({ id: user._id, username: user.username, res })
 
         } catch (error) {
            res.status(500).send(error.message) 
@@ -82,9 +45,30 @@ export class AuthModel {
         
     }
 
-    logout = async (req, res) => {
-        res
-            .clearCookie('access-token')
-            .json({ message: 'Logout successful'})
+    logout = async ({ res }) => {
+        return res
+                .clearCookie('access-token')
+                .json({ message: 'Logout successful'})
     }
+
+    createResponseWithCookie = ({ id, username, res }) => {
+        const token = jwt.sign(
+            { id, username },
+            process.env.JWT_SECRET_KEY,
+            {
+                expiresIn: "1h"
+            }
+        )
+
+        const user = { id, username }
+
+        res
+            .cookie('access-token', token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV == 'production',
+                sameSite: 'strict',
+                maxAge: 1000 * 60 * 60
+            })
+            .send({ user, token })
+    } 
 }

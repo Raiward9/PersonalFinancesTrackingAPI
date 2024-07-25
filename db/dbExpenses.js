@@ -4,7 +4,6 @@ import { Db } from "./db.js";
 export class dbExpenses extends Db {
     constructor() {
         super()
-        console.log(process.env.DB_COLLECTION_EXPENSES)
         this.expenses = this.database.collection(process.env.DB_COLLECTION_EXPENSES)
     }
 

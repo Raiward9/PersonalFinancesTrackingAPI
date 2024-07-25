@@ -4,15 +4,8 @@ export class ExpenseModel {
         this.Db = Db
     }
     
-    getAll = async (req, res) => {
-        const { id: userId } = req.session
-        
+    getAll = async (databaseParams, res) => {
         try {
-            const databaseParams = {
-                data: { user_id: userId },
-                ...req.query
-            }
-
             const rows = await this.Db.getManyRows(
                 databaseParams.mode, databaseParams.lowerBoundDate, databaseParams.upperBoundDate, databaseParams.data
             )
@@ -22,22 +15,14 @@ export class ExpenseModel {
         }
     }
 
-    getById = async (req, res) => {
-        const { id: userId } = req.session
-        
-        const { id: expenseId } = req.params
+    getById = async ({ userId, expenseId }, res) => {
         const rowExpense = await this.Db.getOneRow({ _id: expenseId, user_id: userId}) 
         res.send(rowExpense)
     }   
 
-    createOne = async (req, res) => {
-        const { id: userId } = req.session
+    createOne = async (dataRow, res) => {
 
         try {
-            const dataRow = {
-                user_id: userId,
-                ...req.body
-            }
             const rowCreated = await this.Db.createOneRow(dataRow)
             res.send(rowCreated)
         } catch (error) {
@@ -46,19 +31,12 @@ export class ExpenseModel {
 
     }
 
-    updateOne = async (req, res) => {
-        const { id: userId } = req.session
-
-        const { id: expenseId } = req.params
-        const newValues = req.body
-
+    updateOne = async ({ userId, expenseId, newValues }, res) => {    
         const updatedRow = await this.Db.updateOneRow({user_id: userId, _id: expenseId, data: newValues})
         res.send(updatedRow)
     }
 
-    deleteOne = async (req, res) => {
-        const { id: expenseId } = req.params
-
+    deleteOne = async ({ expenseId }, res) => {
         const deletedRow = await this.Db.deleteOneRow({user_id: userId, _id: expenseId })
         res.send(deletedRow)
     }

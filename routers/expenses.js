@@ -1,18 +1,18 @@
+import dotenv from 'dotenv'
 import { Router } from 'express'
-import { ExpenseModel } from '../models/expense.js'
-import { dbExpenses } from '../db/dbExpenses.js'
 import { authenticationCookieChecker } from '../middlewares/authenticationCookieChecker.js'
+import { ExpenseController } from '../controllers/expense.js'
+
+dotenv.config()
 
 export const expensesRouter = Router()
-
-const databaseExpenses = new dbExpenses() 
-const expenseModel = new ExpenseModel({ Db: databaseExpenses })
+const expenseController = new ExpenseController()
 
 expensesRouter.use('/', authenticationCookieChecker)
 
-expensesRouter.get('/', expenseModel.getAll)
-expensesRouter.get('/:id', expenseModel.getById)
+expensesRouter.get('/', expenseController.getAll)
+expensesRouter.get('/:id', expenseController.getById)
 
-expensesRouter.post('/', expenseModel.createOne)
-expensesRouter.patch('/:id', expenseModel.updateOne)
-expensesRouter.delete('/:id', expenseModel.deleteOne)
+expensesRouter.post('/', expenseController.createOne)
+expensesRouter.patch('/:id', expenseController.updateOne)
+expensesRouter.delete('/:id', expenseController.deleteOne)
