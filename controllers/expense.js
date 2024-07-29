@@ -1,5 +1,6 @@
 import { ExpenseModel } from '../models/expense.js'
 import { dbExpenses } from '../db/dbExpenses.js'
+import { validateExpense, validatePartialExpense } from '../schemas/expenses.js'
 
 export class ExpenseController {
     constructor() {
@@ -25,9 +26,15 @@ export class ExpenseController {
 
     createOne = async (req, res) => {
         const { id: userId } = req.session
+
+        const result = validateExpense(req.body)
+        if(!result.success) {
+            return res.status(400).json({ message: result.error.message })
+        }
+
         const dataRow = {
             user_id: userId,
-            ...req.body
+            ...result.data
         }
 
         return this.expenseModel.createOne(dataRow, res)
@@ -38,7 +45,12 @@ export class ExpenseController {
         const { id: expenseId } = req.params
         const newValues = req.body
 
-        return this.expenseModel.updateOne({ userId, expenseId, newValues }, res)
+        const result = validatePartialExpense(newValues)
+        if(!result.success) {
+            return res.status(400).json({ message: result.error.message })
+        }
+
+        return this.expenseModel.updateOne({ userId, expenseId, newValues:result.data }, res)
     }
 
     deleteOne = async (req, res) => {
