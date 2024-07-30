@@ -11,3 +11,5 @@
   <li>Delete</li>
 </ul>
 <p>Naturally, these operations are restricted to the elements that are property of the user.</p>
+<h3>Warning</h3>
+<p>Beware that the program is lacking some sensible information as the one related with the database. In order to solve the problem is encouraged to create a .env file in the root directory of the project and add the missing environment variables.</p>
