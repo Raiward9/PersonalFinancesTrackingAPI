@@ -1,4 +1,4 @@
-export class ExpenseModel {
+export class MovementModel {
 
     constructor({ Db }) {
         this.Db = Db
@@ -15,9 +15,9 @@ export class ExpenseModel {
         }
     }
 
-    getById = async ({ userId, expenseId }, res) => {
-        const rowExpense = await this.Db.getOneRow({ _id: expenseId, user_id: userId}) 
-        res.send(rowExpense)
+    getById = async ({ userId, movementId }, res) => {
+        const rowMovement = await this.Db.getOneRow({ _id: movementId, user_id: userId}) 
+        res.send(rowMovement)
     }   
 
     createOne = async (dataRow, res) => {
@@ -31,13 +31,13 @@ export class ExpenseModel {
 
     }
 
-    updateOne = async ({ userId, expenseId, newValues }, res) => {    
-        const updatedRow = await this.Db.updateOneRow({user_id: userId, _id: expenseId, data: newValues})
+    updateOne = async ({ userId, movementId, newValues }, res) => {    
+        const updatedRow = await this.Db.updateOneRow({user_id: userId, _id: movementId, data: newValues})
         res.send(updatedRow)
     }
 
-    deleteOne = async ({ expenseId }, res) => {
-        const deletedRow = await this.Db.deleteOneRow({user_id: userId, _id: expenseId })
+    deleteOne = async ({ userId, movementId }, res) => {
+        const deletedRow = await this.Db.deleteOneRow({ user_id: userId, _id: movementId })
         res.send(deletedRow)
     }
 }

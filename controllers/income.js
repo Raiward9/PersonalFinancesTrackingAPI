@@ -1,11 +1,11 @@
 import { MovementModel } from '../models/movement.js'
 import { dbMovements } from '../db/dbMovements.js'
-import { validateExpense, validatePartialExpense } from '../schemas/expenses.js'
+import { validateIncome, validatePartialIncome } from '../schemas/incomes.js'
 
-export class ExpenseController {
+export class IncomeController {
     constructor() {
-        this.Db = new dbMovements({ collection: process.env.DB_COLLECTION_EXPENSES })
-        this.expenseModel = new MovementModel({ Db: this.Db })
+        this.Db = new dbMovements({ collection: process.env.DB_COLLECTION_INCOMES })
+        this.incomeModel = new MovementModel({ Db: this.Db })
     }   
 
     getAll = async (req, res) => {
@@ -14,20 +14,20 @@ export class ExpenseController {
             data: { user_id: userId },
             ...req.query
         }
-        return this.expenseModel.getAll(databaseParams, res)
+        return this.incomeModel.getAll(databaseParams, res)
     }
 
     getById = async (req, res) => {
         const { id: userId } = req.session
-        const { id: expenseId } = req.params
+        const { id: incomeId } = req.params
 
-        return this.expenseModel.getById({ userId, movementId: expenseId }, res)
+        return this.incomeModel.getById({ userId, movementId: incomeId }, res)
     }
 
     createOne = async (req, res) => {
         const { id: userId } = req.session
 
-        const result = validateExpense(req.body)
+        const result = validateIncome(req.body)
         if(!result.success) {
             return res.status(400).json({ message: result.error.message })
         }
@@ -37,26 +37,26 @@ export class ExpenseController {
             ...result.data
         }
 
-        return this.expenseModel.createOne(dataRow, res)
+        return this.incomeModel.createOne(dataRow, res)
     }
 
     updateOne = async (req, res) => {
         const { id: userId } = req.session
-        const { id: expenseId } = req.params
+        const { id: incomeId } = req.params
         const newValues = req.body
 
-        const result = validatePartialExpense(newValues)
+        const result = validatePartialIncome(newValues)
         if(!result.success) {
             return res.status(400).json({ message: result.error.message })
         }
 
-        return this.expenseModel.updateOne({ userId, movementId: expenseId, newValues:result.data }, res)
+        return this.incomeModel.updateOne({ userId, movementId: incomeId, newValues:result.data }, res)
     }
 
     deleteOne = async (req, res) => {
         const { id: userId } = req.session
-        const { id: expenseId } = req.params
+        const { id: incomeId } = req.params
 
-        return this.expenseModel.deleteOne({ userId, movementId: expenseId }, res)
+        return this.incomeModel.deleteOne({ userId, movementId: incomeId }, res)
     }
 }
