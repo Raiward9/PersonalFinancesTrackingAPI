@@ -18,6 +18,9 @@ app.use(userCookieParser)
 app.use('/expenses', expensesRouter)
 app.use('/incomes', incomesRouter)
 
+app.get('/', (req, res) => {
+    res.send('Hello world')
+})
 app.post('/login', authController.login)
 app.post('/register', authController.register)
 
